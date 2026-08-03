@@ -24,11 +24,9 @@
       * {
         box-sizing: border-box;
       }
-
       html {
         scroll-behavior: smooth;
       }
-
       body {
         margin: 0;
         background: var(--bg);
@@ -214,6 +212,31 @@
         font-weight: bold;
       }
 
+      .table-wrap {
+        overflow-x: auto;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 620px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+      th {
+        background: #fafafa;
+        font-size: 14px;
+      }
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
       .lab {
         background: var(--card);
         border: 1px solid var(--line);
@@ -243,6 +266,59 @@
       .lab p {
         color: var(--muted);
         margin: 0;
+      }
+
+      .editor {
+        width: 100%;
+        min-height: 120px;
+        resize: vertical;
+        background: var(--code);
+        color: #edf4fa;
+        border: 1px solid #314050;
+        border-radius: 8px;
+        padding: 16px;
+        margin-top: 16px;
+        font:
+          14px/1.55 Consolas,
+          monospace;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 10px;
+      }
+      .btn {
+        border: 0;
+        border-radius: 8px;
+        min-height: 44px;
+        padding: 0 17px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background: var(--blue);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: #176fbf;
+      }
+      .btn-secondary {
+        background: #eef0f2;
+        color: var(--text);
+      }
+
+      .output {
+        margin-top: 12px;
+        border-left: 4px solid var(--green);
+        background: var(--green-soft);
+        padding: 12px 14px;
+        border-radius: 0 8px 8px 0;
+        min-height: 48px;
+        font:
+          14px/1.5 Consolas,
+          monospace;
       }
 
       .hint {
@@ -293,6 +369,11 @@
         font-size: 14px;
       }
 
+      :focus-visible {
+        outline: 3px solid #8dc5f2;
+        outline-offset: 2px;
+      }
+
       @media (max-width: 760px) {
         .nav .links {
           display: none;
@@ -306,12 +387,6 @@
         }
         .hero {
           gap: 18px;
-        }
-        .section-head {
-          display: block;
-        }
-        .section-head p {
-          margin-top: 6px;
         }
         .task {
           padding-left: 62px;
@@ -345,12 +420,16 @@
           background: #333;
           color: #ff8fac;
         }
+        th {
+          background: #282828;
+        }
+        .btn-secondary {
+          background: #383836;
+          color: #fff;
+        }
         .hint {
           border-color: #65472f;
           color: #ffd9b8;
-        }
-        .objective {
-          border-color: #355875;
         }
       }
     </style>
@@ -374,7 +453,7 @@
           <p class="lead">
             Data tidak selamanya statis. Terkadang ada kesalahan ketik atau data
             yang sudah tidak relevan. Mari pelajari cara memanipulasi data yang
-            sudah ada di dalam tabel.
+            sudah ada di dalam tabel secara interaktif.
           </p>
         </div>
         <aside class="objective">
@@ -388,10 +467,6 @@
             <li>
               Menghapus record tertentu menggunakan perintah
               <code>DELETE</code>.
-            </li>
-            <li>
-              Mengeksekusi query secara aman menggunakan aplikasi CLI/DB
-              Browser.
             </li>
           </ul>
         </aside>
@@ -410,9 +485,7 @@
         </div>
         <div class="grid">
           <article class="card">
-            <h3>
-              <code class="inline">UPDATE</code>
-            </h3>
+            <h3><code class="inline">UPDATE</code></h3>
             <p>
               Digunakan untuk mengubah data yang sudah ada di dalam tabel. Kamu
               menggunakan klausa <code>SET</code> untuk menentukan kolom mana
@@ -435,9 +508,7 @@
           </article>
 
           <article class="card">
-            <h3>
-              <code class="inline">DELETE</code>
-            </h3>
+            <h3><code class="inline">DELETE</code></h3>
             <p>
               Digunakan untuk menghapus satu atau beberapa baris data (record)
               secara permanen dari dalam tabel.
@@ -466,10 +537,9 @@
             <h2>Praktik Eksekusi Langsung</h2>
           </div>
           <p>
-            Buka file <code>latihan.sqlite</code> menggunakan
-            <strong>DB Browser for SQLite</strong> atau CLI, lalu ketik dan
-            jalankan query berikut. Setelah selesai dieksekusi, periksa
-            perubahan datanya dengan melakukan <code>SELECT * FROM Buku;</code>
+            Database <code>Buku</code> dengan 20 data simulasi sudah dimuat.
+            Tekan <strong>Jalankan</strong> dan lihat bagaimana tabel di
+            bawahnya otomatis diperbarui.
           </p>
         </div>
 
@@ -485,14 +555,22 @@
               </p>
             </div>
           </div>
-          <div class="codebox">
-            <span class="comment"
-              >-- Mengubah judul buku Laskar Pelangi menjadi versi revisi</span
-            >
-            <span class="token">UPDATE</span> Buku
-            <span class="token">SET</span> judul_buku =
-            <span class="str">'Laskar Pelangi (Edisi Revisi)'</span>
-            <span class="token">WHERE</span> id = <span class="num">1</span>;
+          <textarea class="editor" id="code1" spellcheck="false">
+-- Mengubah judul buku Laskar Pelangi menjadi versi revisi
+UPDATE Buku 
+SET judul_buku = 'Laskar Pelangi (Edisi Revisi)' 
+WHERE id = 1;</textarea
+          >
+          <div class="actions">
+            <button class="btn btn-primary" onclick="runCode('code1', 'out1')">
+              ▶ Jalankan
+            </button>
+            <button class="btn btn-secondary" onclick="resetCode('code1')">
+              Reset
+            </button>
+          </div>
+          <div class="output" id="out1" aria-live="polite">
+            Output akan muncul di sini.
           </div>
         </article>
 
@@ -503,19 +581,26 @@
               <h3>Update berdasarkan Nomor Buku</h3>
               <p>
                 Kamu juga bisa melakukan update menggunakan acuan unik lainnya
-                selain ID, misalnya menggunakan Nomor Buku.
+                selain ID, misalnya Nomor Buku.
               </p>
             </div>
           </div>
-          <div class="codebox">
-            <span class="comment"
-              >-- Mengubah judul buku untuk nomor_buku B-005</span
-            >
-            <span class="token">UPDATE</span> Buku
-            <span class="token">SET</span> judul_buku =
-            <span class="str">'Cantik Itu Luka (Special Edition)'</span>
-            <span class="token">WHERE</span> nomor_buku =
-            <span class="str">'B-005'</span>;
+          <textarea class="editor" id="code2" spellcheck="false">
+-- Mengubah judul buku untuk nomor_buku B-005
+UPDATE Buku 
+SET judul_buku = 'Cantik Itu Luka (Special Edition)' 
+WHERE nomor_buku = 'B-005';</textarea
+          >
+          <div class="actions">
+            <button class="btn btn-primary" onclick="runCode('code2', 'out2')">
+              ▶ Jalankan
+            </button>
+            <button class="btn btn-secondary" onclick="resetCode('code2')">
+              Reset
+            </button>
+          </div>
+          <div class="output" id="out2" aria-live="polite">
+            Output akan muncul di sini.
           </div>
         </article>
 
@@ -526,16 +611,25 @@
               <h3>Delete berdasarkan ID</h3>
               <p>
                 Jika ada buku yang rusak atau ditarik dari peredaran, kita bisa
-                menghapusnya dari database.
+                menghapusnya secara spesifik menggunakan ID.
               </p>
             </div>
           </div>
-          <div class="codebox">
-            <span class="comment"
-              >-- Menghapus baris data yang memiliki ID 10</span
-            >
-            <span class="token">DELETE FROM</span> Buku
-            <span class="token">WHERE</span> id = <span class="num">10</span>;
+          <textarea class="editor" id="code3" spellcheck="false">
+-- Menghapus baris data yang memiliki ID 10
+DELETE FROM Buku 
+WHERE id = 10;</textarea
+          >
+          <div class="actions">
+            <button class="btn btn-primary" onclick="runCode('code3', 'out3')">
+              ▶ Jalankan
+            </button>
+            <button class="btn btn-secondary" onclick="resetCode('code3')">
+              Reset
+            </button>
+          </div>
+          <div class="output" id="out3" aria-live="polite">
+            Output akan muncul di sini.
           </div>
         </article>
 
@@ -545,27 +639,61 @@
             <div>
               <h3>Delete berdasarkan Pengarang (Mass Delete)</h3>
               <p>
-                Menghapus menggunakan klausa nama (seperti pengarang) dapat
-                menghapus banyak data sekaligus jika pengarang tersebut memiliki
-                lebih dari satu buku.
+                Klausa pencarian umum (seperti pengarang) dapat menghapus banyak
+                data sekaligus jika pengarang memiliki lebih dari satu buku.
               </p>
             </div>
           </div>
-          <div class="codebox">
-            <span class="comment"
-              >-- Menghapus SEMUA buku karangan 'Pidi Baiq' (B-016 &
-              B-017)</span
-            >
-            <span class="token">DELETE FROM</span> Buku
-            <span class="token">WHERE</span> pengarang =
-            <span class="str">'Pidi Baiq'</span>;
+          <textarea class="editor" id="code4" spellcheck="false">
+-- Menghapus SEMUA buku karangan 'Pidi Baiq' (B-016 & B-017)
+DELETE FROM Buku 
+WHERE pengarang = 'Pidi Baiq';</textarea
+          >
+          <div class="actions">
+            <button class="btn btn-primary" onclick="runCode('code4', 'out4')">
+              ▶ Jalankan
+            </button>
+            <button class="btn btn-secondary" onclick="resetCode('code4')">
+              Reset
+            </button>
           </div>
-          <details class="hint">
-            <summary>Penting untuk DB Browser!</summary>
-            Setelah menjalankan perintah UPDATE dan DELETE, jangan lupa menekan
-            tombol <strong>Write Changes</strong> (atau Ctrl+S) agar datanya
-            tersimpan ke file SQLite secara permanen!
-          </details>
+          <div class="output" id="out4" aria-live="polite">
+            Output akan muncul di sini.
+          </div>
+        </article>
+
+        <article class="lab" style="border-color: #ff8fac">
+          <div class="lab-top">
+            <div class="step" style="background: #b03b58">5</div>
+            <div>
+              <h3 style="color: #b03b58">Bencana Tanpa WHERE</h3>
+              <p>
+                Apa jadinya jika kamu menjalankan <code>UPDATE</code> atau
+                <code>DELETE</code> tetapi lupa mengetik klausa
+                <code>WHERE</code>? Coba jalankan kode di bawah ini!
+              </p>
+            </div>
+          </div>
+          <textarea class="editor" id="code5" spellcheck="false">
+-- DONT TRY THIS AT WORK!
+UPDATE Buku 
+SET pengarang = 'Hacker_Anonymous';</textarea
+          >
+          <div class="actions">
+            <button
+              class="btn btn-primary"
+              style="background: #b03b58"
+              onclick="runCode('code5', 'out5')"
+            >
+              ▶ Jalankan Skenario
+            </button>
+            <button class="btn btn-secondary" onclick="resetCode('code5')">
+              Reset
+            </button>
+          </div>
+          <div class="output" id="out5" aria-live="polite">
+            Output akan muncul di sini.
+          </div>
         </article>
       </section>
 
@@ -575,15 +703,17 @@
             <div class="eyebrow">03 • Tugas mandiri</div>
             <h2>Manipulasi Data Lanjutan</h2>
           </div>
-          <p>Uji pemahamanmu dengan studi kasus berikut.</p>
+          <p>
+            Uji pemahamanmu dengan studi kasus berikut di mesin SQLite yang
+            disediakan.
+          </p>
         </div>
         <article class="card task">
           <div class="task-no">A</div>
-          <h3>Kerjakan di DB Browser / CLI</h3>
+          <h3>Lakukan Eksperimen!</h3>
           <p>
-            Lakukan operasi berikut pada tabel <code>Buku</code> dan buktikan
-            dengan menampilkan datanya (<code>SELECT</code>) setelah modifikasi
-            berhasil dilakukan.
+            Ubah salah satu kotak kode praktikum di atas (Langkah 1-4) untuk
+            menyelesaikan instruksi berikut, dan lihat perubahan visualnya.
           </p>
           <ul class="checklist">
             <li>
@@ -612,14 +742,6 @@
                 <strong>"Dee Lestari"</strong> dari perpustakaan.</label
               >
             </li>
-            <li>
-              <label
-                ><input type="checkbox" /> Tampilkan kembali data buku (<code
-                  >SELECT * FROM Buku;</code
-                >) untuk memastikan semua query di atas berhasil
-                dieksekusi.</label
-              >
-            </li>
           </ul>
         </article>
       </section>
@@ -640,14 +762,9 @@
               periode magang.
             </li>
             <li>
-              <strong>Praktikum 1–4:</strong> Screenshot query saat diketik
-              beserta notifikasi pesan sukses dari aplikasi DBMS. Sertakan bukti
-              <code>SELECT</code> yang menunjukkan datanya telah
-              berubah/terhapus.
-            </li>
-            <li>
               <strong>Tugas A:</strong> Screenshot instruksi tugas beserta query
-              yang kamu eksekusi sendiri.
+              yang kamu ketik, dan pastikan tampilan tabel yang sudah berubah
+              ikut ter-screenshot.
             </li>
             <li>
               <strong>Kesimpulan:</strong> Berikan alasan singkat menurut
@@ -669,7 +786,184 @@
       </footer>
     </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+
     <script>
+      const originals = {};
+      document
+        .querySelectorAll(".editor")
+        .forEach((el) => (originals[el.id] = el.value));
+
+      let db;
+
+      // 1. Inisialisasi SQLite di Memori Browser
+      initSqlJs({
+        locateFile: (file) =>
+          `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`,
+      }).then(function (SQL) {
+        db = new SQL.Database();
+
+        // 2. Siapkan Tabel Buku dan Data
+        const initQuery = `
+          CREATE TABLE Buku (
+              id INTEGER PRIMARY KEY AUTOINCREMENT, 
+              nomor_buku TEXT, 
+              judul_buku TEXT, 
+              pengarang TEXT
+          );
+          INSERT INTO Buku (nomor_buku, judul_buku, pengarang) VALUES 
+          ('B-001', 'Laskar Pelangi', 'Andrea Hirata'),
+          ('B-002', 'Bumi Manusia', 'Pramoedya Ananta Toer'),
+          ('B-003', 'Hujan', 'Tere Liye'),
+          ('B-004', 'Filosofi Teras', 'Henry Manampiring'),
+          ('B-005', 'Cantik Itu Luka', 'Eka Kurniawan'),
+          ('B-006', 'Ronggeng Dukuh Paruk', 'Ahmad Tohari'),
+          ('B-007', 'Lelaki Harimau', 'Eka Kurniawan'),
+          ('B-008', 'Gadis Kretek', 'Ratih Kumala'),
+          ('B-009', 'Bintang', 'Tere Liye'),
+          ('B-010', 'Bulan', 'Tere Liye'),
+          ('B-011', 'Matahari', 'Tere Liye'),
+          ('B-012', 'Ayat-Ayat Cinta', 'Habiburrahman El Shirazy'),
+          ('B-013', 'Perahu Kertas', 'Dee Lestari'),
+          ('B-014', 'Supernova', 'Dee Lestari'),
+          ('B-015', 'Negeri 5 Menara', 'A. Fuadi'),
+          ('B-016', 'Dilan 1990', 'Pidi Baiq'),
+          ('B-017', 'Milea', 'Pidi Baiq'),
+          ('B-018', 'Laut Bercerita', 'Leila S. Chudori'),
+          ('B-019', 'Amba', 'Laksmi Pamuntjak'),
+          ('B-020', 'Orang-Orang Biasa', 'Andrea Hirata');
+        `;
+        try {
+          db.run(initQuery);
+          console.log(
+            "✅ Database SQLite & Tabel Buku berhasil dimuat di memori browser!",
+          );
+        } catch (err) {
+          console.error("Gagal menyiapkan database: ", err);
+        }
+      });
+
+      // Fungsi format hasil SQL menjadi Tabel HTML visual dengan gaya bawaan
+      function buildTableHTML(columns, values) {
+        if (!values || values.length === 0) {
+          return `<p style="margin-top:12px; font-style:italic; color:var(--muted);">Tabel Buku kosong (seluruh data telah terhapus).</p>`;
+        }
+
+        let html = `<div class="table-wrap" style="margin-top: 14px;">
+            <table>
+                <thead><tr>`;
+
+        columns.forEach((col) => {
+          html += `<th>${col}</th>`;
+        });
+        html += `</tr></thead><tbody>`;
+
+        values.forEach((row) => {
+          html += `<tr>`;
+          row.forEach((val) => {
+            html += `<td>${val !== null ? val : "<em>NULL</em>"}</td>`;
+          });
+          html += `</tr>`;
+        });
+
+        html += `</tbody></table></div><div style="margin-top:8px; font-size:12px; color:var(--muted);">Tabel Buku saat ini (${values.length} baris tersisa).</div>`;
+        return html;
+      }
+
+      // Validasi & Eksekusi Query
+      function runCode(codeId, outId) {
+        const code = document.getElementById(codeId).value.trim();
+        const output = document.getElementById(outId);
+
+        if (!db) {
+          output.innerHTML = `<strong>⚠️ Harap tunggu, mesin SQLite sedang dimuat...</strong>`;
+          return;
+        }
+
+        if (code.length === 0) {
+          output.style.borderLeftColor = "#e56458";
+          output.style.background = "rgba(229,100,88,.12)";
+          output.innerHTML = `<strong>❌ Error: Query tidak boleh kosong.</strong>`;
+          return;
+        }
+
+        try {
+          db.run(code);
+
+          // Mengambil jumlah baris yang terdampak oleh perintah INSERT/UPDATE/DELETE terakhir
+          const rowsAffected = db.getRowsModified();
+
+          let messages = [];
+          let isDisaster = false;
+
+          // Cek apakah query UPDATE/DELETE dieksekusi TANPA klausa WHERE
+          if (/(UPDATE|DELETE)/i.test(code) && !/WHERE/i.test(code)) {
+            isDisaster = true;
+            messages.push(
+              `🚨 BENCANA: Perintah dieksekusi TANPA klausa WHERE!`,
+            );
+          } else {
+            if (/UPDATE/i.test(code))
+              messages.push(
+                `✅ Sukses: Perintah UPDATE berhasil dieksekusi (${rowsAffected} baris berubah).`,
+              );
+            if (/DELETE/i.test(code))
+              messages.push(
+                `✅ Sukses: Perintah DELETE berhasil dieksekusi (${rowsAffected} baris terhapus).`,
+              );
+            if (messages.length === 0)
+              messages.push("✅ Sukses: Query dieksekusi tanpa error.");
+          }
+
+          // Menarik data terbaru untuk melihat apa yang berubah
+          const res = db.exec("SELECT * FROM Buku");
+
+          // Styling Box Output
+          if (isDisaster) {
+            output.style.borderLeftColor = "#e56458";
+            output.style.background = "rgba(229,100,88,.12)";
+          } else {
+            output.style.borderLeftColor = "var(--green)";
+            output.style.background = "var(--green-soft)";
+          }
+
+          let htmlOutput = `<strong style="${isDisaster ? "color:#b03b58;" : ""}">${messages.join("<br>")}</strong><br>`;
+
+          // Render Meme Alert Jika Disaster
+          if (isDisaster) {
+            htmlOutput += `
+              <div style="background:#000; border: 4px solid #000; border-radius:8px; text-align:center; padding:0; margin:16px 0; font-family: Impact, sans-serif; color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); overflow: hidden;">
+                  <div style="padding: 20px; font-size: 20px; text-transform: uppercase; letter-spacing: 1px;">Ekspresi saat sadar lupa ngetik 'WHERE'</div>
+                  <div style="background: #202020; padding: 30px; font-size: 80px;">😱 💻 💥</div>
+                  <div style="padding: 20px; font-size: 30px; text-transform: uppercase; color: #ff6b6b; letter-spacing: 1px;">${rowsAffected} ROWS AFFECTED</div>
+                  <div style="padding-bottom: 20px; font-size: 14px; font-family: Arial, sans-serif; color: #aaa; text-transform: none;">"Siap-siap dipanggil Bos/HRD..."</div>
+              </div>`;
+          }
+
+          // Render Tabel
+          if (res.length > 0) {
+            htmlOutput += buildTableHTML(res[0].columns, res[0].values);
+          } else {
+            htmlOutput += buildTableHTML([], []);
+          }
+
+          output.innerHTML = htmlOutput;
+        } catch (err) {
+          output.style.borderLeftColor = "#e56458";
+          output.style.background = "rgba(229,100,88,.12)";
+          output.innerHTML = `<strong>❌ Error SQL:</strong> ${err.message}`;
+        }
+      }
+
+      function resetCode(codeId) {
+        document.getElementById(codeId).value = originals[codeId];
+        const out = document.getElementById(codeId.replace("code", "out"));
+        out.textContent = "Output akan muncul di sini.";
+        out.style.borderLeftColor = "var(--green)";
+        out.style.background = "var(--green-soft)";
+      }
+
+      // Anti-Copas
       (function () {
         var pesanJahil = [
           "Eits, mau copas kemana tuh? 😜",

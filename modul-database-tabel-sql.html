@@ -437,41 +437,32 @@
         .nav .links {
           display: none;
         }
-
         main {
           padding: 30px 18px 60px;
         }
-
         .hero,
         .grid {
           grid-template-columns: 1fr;
         }
-
         .hero {
           gap: 18px;
         }
-
         .rubric {
           grid-template-columns: 1fr;
         }
-
         .section-head {
           display: block;
         }
-
         .section-head p {
           margin-top: 6px;
         }
-
         .task {
           padding-left: 62px;
         }
-
         .card,
         .lab {
           padding: 20px;
         }
-
         .task-no {
           left: 18px;
           top: 17px;
@@ -493,26 +484,21 @@
           --orange-soft: #3b2a1d;
           --code: #11161d;
         }
-
         .inline {
           background: #333;
           color: #ff8fac;
         }
-
         th {
           background: #282828;
         }
-
         .btn-secondary {
           background: #383836;
           color: #fff;
         }
-
         .hint {
           border-color: #65472f;
           color: #ffd9b8;
         }
-
         .objective {
           border-color: #355875;
         }
@@ -582,9 +568,9 @@
           </div>
           <p style="margin-top: 12px">
             Pada modul ini, kode dapat dicoba langsung melalui tombol
-            <strong>Jalankan</strong> (disimulasikan). Dalam dunia nyata, Anda
-            akan menjalankan perintah ini di aplikasi seperti XAMPP
-            (phpMyAdmin), DBeaver, atau MySQL Command Line.
+            <strong>Jalankan</strong>. Kode ini akan dijalankan langsung oleh
+            mesin SQLite WebAssembly. Dalam dunia nyata, Anda akan menjalankan
+            perintah ini di aplikasi seperti XAMPP (phpMyAdmin) atau DB Browser.
           </p>
         </article>
         <div class="section-head" style="margin-top: 32px">
@@ -659,7 +645,7 @@
             <h2>Coba sintaks SQL</h2>
           </div>
           <p>
-            Simulasi eksekusi kode SQL. Edit dan tekan
+            Mesin SQLite siap mengeksekusi kode Anda. Edit dan tekan
             <strong>Jalankan</strong>.
           </p>
         </div>
@@ -668,7 +654,13 @@
             <div class="step">1</div>
             <div>
               <h3>Membuat Database</h3>
-              <p>Perintah paling awal sebelum bisa membuat tabel.</p>
+              <p>
+                Perintah paling awal sebelum bisa membuat tabel.
+                <em
+                  >(Catatan: perintah CREATE DATABASE disimulasikan agar
+                  kompatibel dengan mesin SQLite kita)</em
+                >.
+              </p>
             </div>
           </div>
           <textarea class="editor" id="code1" spellcheck="false">
@@ -737,7 +729,8 @@ CREATE TABLE Guru (
               <h3>Memasukkan Data (Insert)</h3>
               <p>
                 Ingat, nilai bertipe teks/VARCHAR harus diapit tanda kutip
-                tunggal (').
+                tunggal ('). Pastikan tabel <strong>Guru</strong> sudah dibuat
+                di Langkah 2!
               </p>
             </div>
           </div>
@@ -881,7 +874,7 @@ VALUES
             </li>
             <li>
               <strong>Praktikum 1–3:</strong> sertakan screenshot kode query dan
-              hasilnya (jika memakai XAMPP/MySQL).
+              hasil eksekusi suksenya di halaman ini.
             </li>
             <li>
               <strong>Tugas A:</strong> sertakan screenshot seluruh kode (Create
@@ -908,35 +901,181 @@ VALUES
         Modul SQL Dasar • Database, Tabel, dan Data • Peserta Magang/PKL SMK RPL
       </footer>
     </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+
     <script>
       const originals = {};
       document
         .querySelectorAll(".editor")
         .forEach((el) => (originals[el.id] = el.value));
 
-      // Fungsi khusus untuk simulasi SQL di frontend HTML statis
+      let db; // Variabel global untuk instance SQLite
+
+      // Inisialisasi SQLite di Memori Browser
+      initSqlJs({
+        locateFile: (file) =>
+          `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`,
+      }).then(function (SQL) {
+        db = new SQL.Database();
+        console.log("✅ Database SQLite berhasil dimuat di memori browser!");
+      });
+
+      // Fungsi format hasil SQL menjadi Tabel HTML visual
+      function buildTableHTML(tableName, columns, values) {
+        let html = `<div class="table-wrap" style="margin-top:14px; border: 1px solid #8dc5f2;">
+            <div style="padding: 8px 12px; background: #eaf4fd; border-bottom: 1px solid #cbe4f8; font-weight: bold; color: #176fbf; font-size: 14px;">
+              Tabel: ${tableName}
+            </div>
+            <table style="min-width:100%; font-size:13px; margin: 0;">
+                <thead style="background:#fff;"><tr>`;
+
+        // Buat Header Tabel dari nama kolom
+        columns.forEach((col) => {
+          html += `<th style="padding:8px 12px; border-bottom:2px solid #ccc;">${col}</th>`;
+        });
+        html += `</tr></thead><tbody>`;
+
+        if (!values || values.length === 0) {
+          html += `<tr><td colspan="${columns.length}" style="padding:16px; text-align:center; color:#68707c; font-style:italic;">Tabel berhasil dibuat, namun belum ada data (0 baris).</td></tr>`;
+        } else {
+          // Buat Baris Data
+          values.forEach((row) => {
+            html += `<tr>`;
+            row.forEach((val) => {
+              html += `<td style="padding:8px 12px; border-bottom:1px solid #eee;">${val !== null ? val : "<em>NULL</em>"}</td>`;
+            });
+            html += `</tr>`;
+          });
+        }
+
+        html += `</tbody></table></div>`;
+        if (values && values.length > 0) {
+          html += `<div style="margin-top:8px; font-size:12px; color:var(--muted);">Menampilkan ${values.length} baris data.</div>`;
+        }
+        return html;
+      }
+
+      // Fungsi Eksekusi Terintegrasi dengan SQLite & Visualisasi
       function runCode(codeId, outId) {
-        const code = document.getElementById(codeId).value.toUpperCase();
+        const code = document.getElementById(codeId).value.trim();
         const output = document.getElementById(outId);
-        let result = "";
 
-        if (code.includes("CREATE DATABASE")) {
-          result += "✅ Eksekusi berhasil: Database diproses.\n";
-        }
-        if (code.includes("CREATE TABLE")) {
-          result += "✅ Eksekusi berhasil: Tabel diproses.\n";
-        }
-        if (code.includes("INSERT INTO")) {
-          result += "✅ Eksekusi berhasil: Data (record) ditambahkan.\n";
-        }
-        if (result === "") {
-          result =
-            "✅ Query SQL selesai dibaca (Tidak ada CREATE/INSERT terdeteksi, pastikan sintaks benar).";
+        if (!db) {
+          output.innerHTML = `<strong>⚠️ Harap tunggu, mesin SQLite sedang dimuat...</strong>`;
+          return;
         }
 
-        output.style.borderLeftColor = "var(--green)";
-        output.style.background = "var(--green-soft)";
-        output.textContent = result;
+        if (code.length === 0) {
+          output.style.borderLeftColor = "#e56458";
+          output.style.background = "rgba(229,100,88,.12)";
+          output.innerHTML = `<strong>❌ Error: Query tidak boleh kosong.</strong>`;
+          return;
+        }
+
+        try {
+          // SQLite TIDAK mensupport perintah 'CREATE DATABASE' atau 'USE' secara native.
+          // Kita "bersihkan" kode ini sebelum mengeksekusi DDL/DML,
+          // tapi tetap memberikan pesan simulasi sukses ke layar.
+          const executableCode = code
+            .replace(/CREATE\s+DATABASE\s+[a-zA-Z0-9_]+;/gi, "")
+            .replace(/USE\s+[a-zA-Z0-9_]+;/gi, "")
+            .replace(/DROP\s+DATABASE\s+IF\s+EXISTS\s+[a-zA-Z0-9_]+;/gi, "");
+
+          let messages = [];
+          let tableNameToVisualize = null;
+
+          // Pesan Simulasi Dasar
+          if (/CREATE\s+DATABASE/i.test(code)) {
+            messages.push(
+              "✅ Database berhasil disiapkan (Disimulasikan untuk SQLite).",
+            );
+          }
+          if (/USE\s+/i.test(code)) {
+            messages.push("✅ Database terpilih dan siap digunakan.");
+          }
+
+          // Eksekusi kode real ke SQLite (Tabel & Insert)
+          if (executableCode.trim().length > 0) {
+            db.run(executableCode);
+
+            // Deteksi nama tabel dari CREATE TABLE
+            const matchCreate = executableCode.match(
+              /CREATE\s+TABLE\s+([a-zA-Z0-9_]+)/i,
+            );
+            if (matchCreate) {
+              messages.push(
+                `✅ Sukses: Struktur tabel <strong>${matchCreate[1]}</strong> berhasil dibuat di SQLite Engine.`,
+              );
+              tableNameToVisualize = matchCreate[1];
+            }
+
+            // Deteksi nama tabel dari INSERT INTO (Prioritas visualisasi terakhir)
+            const matchInsert = executableCode.match(
+              /INSERT\s+INTO\s+([a-zA-Z0-9_]+)/i,
+            );
+            if (matchInsert) {
+              messages.push(
+                `✅ Sukses: Data berhasil ditambahkan ke tabel <strong>${matchInsert[1]}</strong>.`,
+              );
+              tableNameToVisualize = matchInsert[1];
+            }
+          }
+
+          if (messages.length === 0) {
+            messages.push("✅ Sukses: Query dieksekusi tanpa error.");
+          }
+
+          let htmlOutput = `<strong>${messages.join("<br>")}</strong>`;
+
+          // PROSES VISUALISASI TABEL
+          if (tableNameToVisualize) {
+            try {
+              // Cek apakah ada isinya
+              const selResult = db.exec(
+                `SELECT * FROM ${tableNameToVisualize}`,
+              );
+
+              if (selResult.length > 0) {
+                // Jika tabel ada isinya (Setelah INSERT)
+                htmlOutput += buildTableHTML(
+                  tableNameToVisualize,
+                  selResult[0].columns,
+                  selResult[0].values,
+                );
+              } else {
+                // Jika tabel masih kosong (Setelah CREATE TABLE), ambil daftar kolomnya saja via PRAGMA
+                const pragmaResult = db.exec(
+                  `PRAGMA table_info(${tableNameToVisualize})`,
+                );
+                if (pragmaResult.length > 0) {
+                  // Kolom index ke-1 dari result PRAGMA adalah nama kolom
+                  const colNames = pragmaResult[0].values.map((row) => row[1]);
+                  htmlOutput += buildTableHTML(
+                    tableNameToVisualize,
+                    colNames,
+                    [],
+                  );
+                }
+              }
+            } catch (vizError) {
+              console.warn(
+                "Visualisasi gagal (mungkin tabel dihapus/tidak ditemukan): ",
+                vizError,
+              );
+            }
+          }
+
+          // Tampilkan Output
+          output.style.borderLeftColor = "var(--green)";
+          output.style.background = "var(--card)"; // Latar putih agar tabel lebih jelas
+          output.innerHTML = htmlOutput;
+        } catch (err) {
+          // Tangkap error nyata dari engine SQLite
+          output.style.borderLeftColor = "#e56458";
+          output.style.background = "rgba(229,100,88,.12)";
+          output.innerHTML = `<strong>❌ Error SQL:</strong> ${err.message}`;
+        }
       }
 
       function resetCode(codeId) {
@@ -947,6 +1086,7 @@ VALUES
         out.style.background = "var(--green-soft)";
       }
 
+      // Anti Copas
       (function () {
         var pesanJahil = [
           "Menangis kau dek dek, jangan COPAS 😜",
@@ -1011,76 +1151,6 @@ VALUES
           }
         });
       })();
-
-      // Fungsi khusus untuk simulasi SQL yang lebih ketat
-      function runCode(codeId, outId) {
-        const code = document.getElementById(codeId).value.trim();
-        const output = document.getElementById(outId);
-        let result = [];
-        let hasError = false;
-
-        // 1. Validasi CREATE DATABASE
-        if (/CREATE\s+DATABASE/i.test(code)) {
-          // Cek apakah formatnya: CREATE DATABASE nama_db;
-          if (/CREATE\s+DATABASE\s+[a-zA-Z0-9_]+\s*;/i.test(code)) {
-            result.push("✅ Sukses: Database berhasil disiapkan.");
-          } else {
-            result.push(
-              "❌ Error: Sintaks CREATE DATABASE salah. Pastikan penamaan tanpa spasi dan diakhiri titik koma (;).",
-            );
-            hasError = true;
-          }
-        }
-
-        // 2. Validasi CREATE TABLE
-        if (/CREATE\s+TABLE/i.test(code)) {
-          // Cek apakah ada kurung buka, isi kolom, kurung tutup, dan titik koma
-          if (/CREATE\s+TABLE\s+[a-zA-Z0-9_]+\s*\([\s\S]+\)\s*;/i.test(code)) {
-            result.push("✅ Sukses: Struktur tabel berhasil dibuat.");
-          } else {
-            result.push(
-              "❌ Error: Sintaks CREATE TABLE tidak valid. Periksa kelengkapan tanda kurung () dan titik koma (;).",
-            );
-            hasError = true;
-          }
-        }
-
-        // 3. Validasi INSERT INTO
-        if (/INSERT\s+INTO/i.test(code)) {
-          // Cek pola INSERT INTO nama_tabel VALUES (isi);
-          if (
-            /INSERT\s+INTO\s+[a-zA-Z0-9_]+\s*(\([\s\S]+\))?\s*VALUES\s*\([\s\S]+\)\s*;/i.test(
-              code,
-            )
-          ) {
-            result.push("✅ Sukses: Data (record) berhasil ditambahkan.");
-          } else {
-            result.push(
-              "❌ Error: Sintaks INSERT INTO salah. Periksa format VALUES dan penutup titik koma (;).",
-            );
-            hasError = true;
-          }
-        }
-
-        // 4. Jika query kosong atau tidak dikenali sama sekali
-        if (result.length === 0) {
-          result.push(
-            "⚠️ Peringatan: Query tidak dikenali atau penulisan belum lengkap.",
-          );
-          hasError = true;
-        }
-
-        // Mengubah warna output berdasarkan status error
-        if (hasError) {
-          output.style.borderLeftColor = "#e56458";
-          output.style.background = "rgba(229,100,88,.12)";
-        } else {
-          output.style.borderLeftColor = "var(--green)";
-          output.style.background = "var(--green-soft)";
-        }
-
-        output.textContent = result.join("\n\n");
-      }
     </script>
   </body>
 </html>

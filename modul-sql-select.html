@@ -286,6 +286,66 @@
         margin: 0;
       }
 
+      .editor {
+        width: 100%;
+        min-height: 120px;
+        resize: vertical;
+        background: var(--code);
+        color: #edf4fa;
+        border: 1px solid #314050;
+        border-radius: 8px;
+        padding: 16px;
+        margin-top: 16px;
+        font:
+          14px/1.55 Consolas,
+          Menlo,
+          monospace;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 10px;
+      }
+
+      .btn {
+        border: 0;
+        border-radius: 8px;
+        min-height: 44px;
+        padding: 0 17px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .btn-primary {
+        background: var(--blue);
+        color: #fff;
+      }
+
+      .btn-primary:hover {
+        background: #176fbf;
+      }
+
+      .btn-secondary {
+        background: #eef0f2;
+        color: var(--text);
+      }
+
+      .output {
+        margin-top: 12px;
+        border-left: 4px solid var(--green);
+        background: var(--green-soft);
+        padding: 12px 14px;
+        border-radius: 0 8px 8px 0;
+        min-height: 48px;
+        white-space: pre-wrap;
+        font:
+          14px/1.5 Consolas,
+          Menlo,
+          monospace;
+      }
+
       .hint {
         margin-top: 14px;
         background: var(--orange-soft);
@@ -331,6 +391,25 @@
         margin-right: 8px;
       }
 
+      .rubric {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .rubric div {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+      }
+
+      .rubric strong {
+        display: block;
+        color: var(--blue);
+        font-size: 20px;
+      }
+
       .footer {
         margin-top: 56px;
         padding-top: 24px;
@@ -357,6 +436,9 @@
         }
         .hero {
           gap: 18px;
+        }
+        .rubric {
+          grid-template-columns: 1fr;
         }
         .section-head {
           display: block;
@@ -399,6 +481,10 @@
         th {
           background: #282828;
         }
+        .btn-secondary {
+          background: #383836;
+          color: #fff;
+        }
         .hint {
           border-color: #65472f;
           color: #ffd9b8;
@@ -428,7 +514,7 @@
           <p class="lead">
             Setelah membuat tabel dan mengisinya dengan data, saatnya belajar
             bagaimana cara memanggil, menyaring, dan mengurutkan data dari tabel
-            tersebut menggunakan aplikasi CLI atau DB Browser.
+            tersebut.
           </p>
         </div>
         <aside class="objective">
@@ -552,12 +638,11 @@
         <div class="section-head">
           <div>
             <div class="eyebrow">02 • Praktikum</div>
-            <h2>Praktik dengan DB Browser</h2>
+            <h2>Coba sintaks pencarian</h2>
           </div>
           <p>
-            Buka file <code>latihan.sqlite</code> menggunakan aplikasi
-            <strong>DB Browser for SQLite</strong>, lalu ketik dan jalankan
-            query berikut di tab <strong>Execute SQL</strong>.
+            Database <code>Buku</code> dengan 20 data telah disiapkan di memori.
+            Tulis query-nya dan klik <strong>Jalankan</strong>.
           </p>
         </div>
 
@@ -572,26 +657,28 @@
               </p>
             </div>
           </div>
-          <div class="codebox">
-            <span class="comment"
-              >-- 1. Menampilkan seluruh data tabel Buku</span
-            >
-            <span class="token">SELECT</span> *
-            <span class="token">FROM</span> Buku;
+          <textarea class="editor" id="code1" spellcheck="false">
+-- 1. Menampilkan seluruh data tabel Buku
+SELECT * FROM Buku;
 
-            <span class="comment"
-              >-- 2. Menampilkan data berdasarkan kode buku</span
-            >
-            <span class="token">SELECT</span> *
-            <span class="token">FROM</span> Buku
-            <span class="token">WHERE</span> nomor_buku =
-            <span class="str">'B-015'</span>;
+-- 2. Menampilkan data berdasarkan kode buku
+-- SELECT * FROM Buku WHERE nomor_buku = 'B-015';</textarea
+          >
+          <div class="actions">
+            <button class="btn btn-primary" onclick="runCode('code1', 'out1')">
+              ▶ Jalankan
+            </button>
+            <button class="btn btn-secondary" onclick="resetCode('code1')">
+              Reset
+            </button>
+          </div>
+          <div class="output" id="out1" aria-live="polite">
+            Output akan muncul di sini.
           </div>
           <details class="hint">
             <summary>Jangan Lupa!</summary>
-            Dalam SQL murni, pastikan selalu mengakhiri statement query dengan
-            tanda titik koma (<code>;</code>) lalu tekan tombol
-            <strong>Play</strong> (▶) di DB Browser.
+            Komentar SQL (--) akan diabaikan oleh database. Hapus tanda
+            <code>--</code> pada baris ke-4 untuk mencoba query tersebut.
           </details>
         </article>
 
@@ -606,16 +693,20 @@
               </p>
             </div>
           </div>
-          <div class="codebox">
-            <span class="comment"
-              >-- Mencari pengarang yang namanya mengandung kata
-              'Pramoedya'</span
-            >
-            <span class="token">SELECT</span> *
-            <span class="token">FROM</span> Buku
-            <span class="token">WHERE</span> pengarang
-            <span class="token">LIKE</span>
-            <span class="str">'%Pramoedya%'</span>;
+          <textarea class="editor" id="code2" spellcheck="false">
+-- Mencari pengarang yang namanya mengandung kata 'Pramoedya'
+SELECT * FROM Buku WHERE pengarang LIKE '%Pramoedya%';</textarea
+          >
+          <div class="actions">
+            <button class="btn btn-primary" onclick="runCode('code2', 'out2')">
+              ▶ Jalankan
+            </button>
+            <button class="btn btn-secondary" onclick="resetCode('code2')">
+              Reset
+            </button>
+          </div>
+          <div class="output" id="out2" aria-live="polite">
+            Output akan muncul di sini.
           </div>
         </article>
 
@@ -630,17 +721,21 @@
               </p>
             </div>
           </div>
-          <div class="codebox">
-            <span class="comment"
-              >-- Mengurutkan berdasarkan ID dari yang terbesar (DESC)</span
-            >
-            <span class="comment"
-              >-- dan hanya menampilkan 10 data teratas.</span
-            >
-            <span class="token">SELECT</span> *
-            <span class="token">FROM</span> Buku
-            <span class="token">ORDER BY</span> id
-            <span class="token">DESC LIMIT</span> 10;
+          <textarea class="editor" id="code3" spellcheck="false">
+-- Mengurutkan berdasarkan ID dari yang terbesar (DESC)
+-- dan hanya menampilkan 5 data teratas.
+SELECT * FROM Buku ORDER BY id DESC LIMIT 5;</textarea
+          >
+          <div class="actions">
+            <button class="btn btn-primary" onclick="runCode('code3', 'out3')">
+              ▶ Jalankan
+            </button>
+            <button class="btn btn-secondary" onclick="resetCode('code3')">
+              Reset
+            </button>
+          </div>
+          <div class="output" id="out3" aria-live="polite">
+            Output akan muncul di sini.
           </div>
         </article>
       </section>
@@ -657,8 +752,8 @@
           <div class="task-no">A</div>
           <h3>Eksplorasi Lanjutan</h3>
           <p>
-            Kerjakan skenario berikut menggunakan aplikasi DBMS
-            <strong>DB Browser for SQLite</strong>.
+            Gunakan area praktikum di atas (Langkah 1, 2, atau 3) untuk
+            menjalankan skenario pencarian berikut dan catat hasilnya.
           </p>
           <ul class="checklist">
             <li>
@@ -721,10 +816,7 @@
             <div class="eyebrow">Pengumpulan hasil belajar</div>
             <h2>Format Tugas Laporan</h2>
           </div>
-          <p>
-            Susun screenshot sintaks dan hasilnya (di DB Browser) menjadi satu
-            PDF.
-          </p>
+          <p>Susun screenshot sintaks dan hasilnya menjadi satu PDF.</p>
         </div>
         <article class="card">
           <h3>Isi laporan</h3>
@@ -734,13 +826,8 @@
               periode magang.
             </li>
             <li>
-              <strong>Praktikum 1–3:</strong> Screenshot query dan screenshot
-              tabel hasilnya dari aplikasi
-              <strong>DB Browser for SQLite</strong>.
-            </li>
-            <li>
               <strong>Tugas A:</strong> Screenshot seluruh 7 instruksi dari
-              Tugas Mandiri, beserta hasil eksekusi query-nya.
+              Tugas Mandiri, beserta visualisasi tabel hasil run query-nya.
             </li>
             <li>
               <strong>Kesimpulan Singkat:</strong> Perbedaan ASC dan DESC
@@ -759,8 +846,145 @@
       </footer>
     </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+
     <script>
-      // Anti-copas script tetap dipertahankan
+      const originals = {};
+      document
+        .querySelectorAll(".editor")
+        .forEach((el) => (originals[el.id] = el.value));
+
+      let db;
+
+      // 1. Inisialisasi SQLite di Memori Browser
+      initSqlJs({
+        locateFile: (file) =>
+          `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`,
+      }).then(function (SQL) {
+        db = new SQL.Database();
+
+        // 2. Siapkan Tabel dan 20 Data Dummy otomatis agar siswa bisa langsung SELECT
+        const initQuery = `
+          CREATE TABLE Buku (
+              id INTEGER PRIMARY KEY AUTOINCREMENT, 
+              nomor_buku TEXT, 
+              judul_buku TEXT, 
+              pengarang TEXT
+          );
+          INSERT INTO Buku (nomor_buku, judul_buku, pengarang) VALUES 
+          ('B-001', 'Laskar Pelangi', 'Andrea Hirata'),
+          ('B-002', 'Bumi Manusia', 'Pramoedya Ananta Toer'),
+          ('B-003', 'Hujan', 'Tere Liye'),
+          ('B-004', 'Filosofi Teras', 'Henry Manampiring'),
+          ('B-005', 'Cantik Itu Luka', 'Eka Kurniawan'),
+          ('B-006', 'Ronggeng Dukuh Paruk', 'Ahmad Tohari'),
+          ('B-007', 'Lelaki Harimau', 'Eka Kurniawan'),
+          ('B-008', 'Gadis Kretek', 'Ratih Kumala'),
+          ('B-009', 'Bintang', 'Tere Liye'),
+          ('B-010', 'Bulan', 'Tere Liye'),
+          ('B-011', 'Matahari', 'Tere Liye'),
+          ('B-012', 'Ayat-Ayat Cinta', 'Habiburrahman El Shirazy'),
+          ('B-013', 'Perahu Kertas', 'Dee Lestari'),
+          ('B-014', 'Supernova', 'Dee Lestari'),
+          ('B-015', 'Negeri 5 Menara', 'A. Fuadi'),
+          ('B-016', 'Dilan 1990', 'Pidi Baiq'),
+          ('B-017', 'Milea', 'Pidi Baiq'),
+          ('B-018', 'Laut Bercerita', 'Leila S. Chudori'),
+          ('B-019', 'Amba', 'Laksmi Pamuntjak'),
+          ('B-020', 'Orang-Orang Biasa', 'Andrea Hirata');
+        `;
+        try {
+          db.run(initQuery);
+          console.log(
+            "✅ Database SQLite & Tabel Buku berhasil dimuat di memori browser!",
+          );
+        } catch (err) {
+          console.error("Gagal menyiapkan database: ", err);
+        }
+      });
+
+      // Fungsi format hasil SQL menjadi Tabel HTML visual
+      function buildTableHTML(columns, values) {
+        if (!values || values.length === 0) {
+          return `<div style="padding:16px; font-style:italic; color:#68707c;">Query berhasil dieksekusi, namun tidak ada data yang cocok dengan pencarian (0 baris).</div>`;
+        }
+
+        let html = `<div class="table-wrap" style="margin-top:10px; border: 1px solid #8dc5f2;">
+            <table style="min-width:100%; font-size:13px; margin: 0;">
+                <thead style="background:#eaf4fd;"><tr>`;
+
+        columns.forEach((col) => {
+          html += `<th style="padding:8px 12px; border-bottom:2px solid #cbe4f8; color:#176fbf;">${col}</th>`;
+        });
+        html += `</tr></thead><tbody>`;
+
+        values.forEach((row) => {
+          html += `<tr>`;
+          row.forEach((val) => {
+            html += `<td style="padding:8px 12px; border-bottom:1px solid #eee;">${val !== null ? val : "<em>NULL</em>"}</td>`;
+          });
+          html += `</tr>`;
+        });
+
+        html += `</tbody></table></div><div style="margin-top:8px; font-size:12px; color:var(--muted);">Menampilkan ${values.length} baris data.</div>`;
+        return html;
+      }
+
+      // Validasi & Eksekusi Query
+      function runCode(codeId, outId) {
+        const code = document.getElementById(codeId).value.trim();
+        const output = document.getElementById(outId);
+
+        if (!db) {
+          output.innerHTML = `<strong>⚠️ Harap tunggu, mesin SQLite sedang dimuat...</strong>`;
+          return;
+        }
+
+        if (code.length === 0) {
+          output.style.borderLeftColor = "#e56458";
+          output.style.background = "rgba(229,100,88,.12)";
+          output.innerHTML = `<strong>❌ Error: Query tidak boleh kosong.</strong>`;
+          return;
+        }
+
+        try {
+          // Eksekusi kode ke SQLite
+          // db.exec akan mengembalikan array array objek hasil SELECT
+          const result = db.exec(code);
+
+          output.style.borderLeftColor = "var(--green)";
+          output.style.background = "var(--card)"; // Latar putih untuk tabel
+
+          if (result.length > 0) {
+            let finalHtml = `✅ <strong>Sukses mengambil data:</strong><br>`;
+
+            // Menangani jika siswa menulis lebih dari 1 query SELECT (dipisahkan ;)
+            result.forEach((res, index) => {
+              if (result.length > 1) {
+                finalHtml += `<div style="margin-top:14px; font-weight:bold; color:var(--blue);">Hasil Query ${index + 1}:</div>`;
+              }
+              finalHtml += buildTableHTML(res.columns, res.values);
+            });
+
+            output.innerHTML = finalHtml;
+          } else {
+            output.innerHTML = `✅ <strong>Sukses!</strong> Query berhasil dieksekusi (namun tidak ada tabel yang dikembalikan / bukan perintah SELECT).`;
+          }
+        } catch (err) {
+          output.style.borderLeftColor = "#e56458";
+          output.style.background = "rgba(229,100,88,.12)";
+          output.innerHTML = `<strong>❌ Error SQL:</strong> ${err.message}`;
+        }
+      }
+
+      function resetCode(codeId) {
+        document.getElementById(codeId).value = originals[codeId];
+        const out = document.getElementById(codeId.replace("code", "out"));
+        out.textContent = "Output akan muncul di sini.";
+        out.style.borderLeftColor = "var(--green)";
+        out.style.background = "var(--green-soft)";
+      }
+
       (function () {
         var pesanJahil = [
           "Menangis kau dek dek, jangan COPAS 😜",
@@ -772,6 +996,7 @@
         function acak() {
           return pesanJahil[Math.floor(Math.random() * pesanJahil.length)];
         }
+
         var t = document.createElement("div");
         t.style.cssText =
           "position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#17202b;color:#fff;padding:12px 18px;border-radius:10px;font:600 14px Arial,sans-serif;opacity:0;pointer-events:none;transition:.25s;z-index:9999;box-shadow:0 6px 18px rgba(0,0,0,.22)";
@@ -797,6 +1022,16 @@
               toast();
             });
           });
+        });
+        document.querySelectorAll(".editor").forEach(function (ed) {
+          ["paste", "copy", "cut", "drop", "contextmenu"].forEach(
+            function (ev) {
+              ed.addEventListener(ev, function (e) {
+                e.preventDefault();
+                toast();
+              });
+            },
+          );
         });
         document.addEventListener("contextmenu", function (e) {
           e.preventDefault();
