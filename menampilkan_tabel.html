@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SQL Dasar — Menampilkan Data (SELECT)</title>
+    <style>
+      :root {
+        --bg: #f7f8fa;
+        --card: #fff;
+        --text: #202124;
+        --muted: #68707c;
+        --line: #e3e6ea;
+        --blue: #2783de;
+        --blue-soft: #eaf4fd;
+        --green: #2f8f62;
+        --green-soft: #e8f4ed;
+        --orange: #bd6f2d;
+        --orange-soft: #fff1e5;
+        --code: #17202b;
+        --radius: 12px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font:
+          16px/1.6 Arial,
+          Helvetica,
+          sans-serif;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      .top {
+        background: var(--card);
+        border-bottom: 1px solid var(--line);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .nav {
+        max-width: 1040px;
+        margin: auto;
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .brand {
+        font-weight: 800;
+      }
+
+      .brand span {
+        color: var(--blue);
+      }
+
+      .nav a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        margin-left: 18px;
+      }
+
+      .nav a:hover {
+        color: var(--blue);
+      }
+
+      main {
+        max-width: 1040px;
+        margin: auto;
+        padding: 48px 24px 80px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.25fr 0.75fr;
+        gap: 32px;
+        align-items: center;
+        margin-bottom: 48px;
+      }
+
+      .eyebrow {
+        color: var(--blue);
+        font-weight: 700;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .hero h1 {
+        font-size: clamp(34px, 5vw, 56px);
+        line-height: 1.08;
+        margin: 8px 0 16px;
+        letter-spacing: -0.03em;
+      }
+
+      .lead {
+        color: var(--muted);
+        font-size: 18px;
+        max-width: 650px;
+      }
+
+      .objective {
+        background: var(--blue-soft);
+        border: 1px solid #cbe4f8;
+        border-radius: var(--radius);
+        padding: 24px;
+      }
+
+      .objective h2 {
+        font-size: 18px;
+        margin: 0 0 10px;
+      }
+
+      .objective ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      section {
+        scroll-margin-top: 82px;
+        margin-top: 52px;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .section-head h2 {
+        font-size: 28px;
+        line-height: 1.2;
+        margin: 0;
+      }
+
+      .section-head p {
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+      }
+
+      .card h3 {
+        margin: 0 0 8px;
+        font-size: 19px;
+      }
+
+      .card p {
+        margin: 4px 0;
+        color: var(--muted);
+      }
+
+      code {
+        font-family: Consolas, Menlo, monospace;
+      }
+
+      .inline {
+        background: #eef0f2;
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: #b03b58;
+      }
+
+      .codebox {
+        background: var(--code);
+        color: #e6edf3;
+        border-radius: 8px;
+        padding: 16px;
+        overflow: auto;
+        margin-top: 14px;
+        font:
+          14px/1.55 Consolas,
+          Menlo,
+          monospace;
+        white-space: pre;
+      }
+
+      .token {
+        color: #ffc777;
+      }
+
+      .str {
+        color: #a8d89b;
+      }
+
+      .num {
+        color: #7cc7ff;
+      }
+
+      .comment {
+        color: #8b98a8;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 620px;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      th {
+        background: #fafafa;
+        font-size: 14px;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .lab {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 18px;
+      }
+
+      .lab-top {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+
+      .step {
+        width: 34px;
+        height: 34px;
+        flex: 0 0 auto;
+        border-radius: 8px;
+        background: var(--blue);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+      }
+
+      .lab h3 {
+        margin: 0 0 3px;
+      }
+
+      .lab p {
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .hint {
+        margin-top: 14px;
+        background: var(--orange-soft);
+        border: 1px solid #f3d4b8;
+        border-radius: 8px;
+        padding: 12px 14px;
+        color: #78451d;
+      }
+
+      .hint summary {
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .task {
+        position: relative;
+        padding-left: 74px;
+      }
+
+      .task-no {
+        position: absolute;
+        left: 22px;
+        top: 22px;
+        color: var(--blue);
+        font-size: 28px;
+        font-weight: 900;
+      }
+
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 14px 0 0;
+      }
+
+      .checklist li {
+        margin: 8px 0;
+      }
+
+      .checklist input {
+        width: 18px;
+        height: 18px;
+        vertical-align: -3px;
+        margin-right: 8px;
+      }
+
+      .footer {
+        margin-top: 56px;
+        padding-top: 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      :focus-visible {
+        outline: 3px solid #8dc5f2;
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 760px) {
+        .nav .links {
+          display: none;
+        }
+        main {
+          padding: 30px 18px 60px;
+        }
+        .hero,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .hero {
+          gap: 18px;
+        }
+        .section-head {
+          display: block;
+        }
+        .section-head p {
+          margin-top: 6px;
+        }
+        .task {
+          padding-left: 62px;
+        }
+        .card,
+        .lab {
+          padding: 20px;
+        }
+        .task-no {
+          left: 18px;
+          top: 17px;
+        }
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #191919;
+          --card: #202020;
+          --text: #fff;
+          --muted: rgba(255, 255, 255, 0.66);
+          --line: rgba(255, 255, 255, 0.18);
+          --blue: #5e9fe8;
+          --blue-soft: #1d3045;
+          --green: #72bc8f;
+          --green-soft: #1c3025;
+          --orange: #de9255;
+          --orange-soft: #3b2a1d;
+          --code: #11161d;
+        }
+        .inline {
+          background: #333;
+          color: #ff8fac;
+        }
+        th {
+          background: #282828;
+        }
+        .hint {
+          border-color: #65472f;
+          color: #ffd9b8;
+        }
+        .objective {
+          border-color: #355875;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="top">
+      <nav class="nav" aria-label="Navigasi materi">
+        <div class="brand"><span>SQL</span> Dasar</div>
+        <div class="links">
+          <a href="#materi">Materi</a><a href="#praktikum">Praktikum</a
+          ><a href="#tugas">Tugas</a><a href="#pengumpulan">Pengumpulan</a>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <div class="hero">
+        <div>
+          <div class="eyebrow">Modul SQL • Peserta Magang/PKL SMK RPL</div>
+          <h1>Menampilkan Data<br />(Query SELECT)</h1>
+          <p class="lead">
+            Setelah membuat tabel dan mengisinya dengan data, saatnya belajar
+            bagaimana cara memanggil, menyaring, dan mengurutkan data dari tabel
+            tersebut menggunakan aplikasi CLI atau DB Browser.
+          </p>
+        </div>
+        <aside class="objective">
+          <h2>Tujuan pembelajaran</h2>
+          <ul>
+            <li>
+              Menggunakan perintah <code>SELECT</code> untuk memanggil semua
+              data.
+            </li>
+            <li>
+              Menyaring data spesifik (<code>WHERE</code>) & pencarian pola
+              (<code>LIKE</code>).
+            </li>
+            <li>
+              Mengurutkan data menggunakan <code>ORDER BY</code> (ASC & DESC).
+            </li>
+            <li>
+              Membatasi jumlah data yang tampil dengan <code>LIMIT</code>.
+            </li>
+          </ul>
+        </aside>
+      </div>
+
+      <section id="materi">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">01 • Penjelasan singkat</div>
+            <h2>Perintah SELECT</h2>
+          </div>
+          <p>
+            SELECT adalah perintah paling sering digunakan dalam basis data.
+          </p>
+        </div>
+        <article class="card">
+          <h3>Struktur Dasar Pengambilan Data</h3>
+          <p>
+            Gunakan simbol <code>*</code> (bintang/asterisk) untuk mengambil
+            <strong>semua kolom</strong> dari suatu tabel, atau sebutkan nama
+            kolomnya satu per satu jika hanya butuh data tertentu.
+          </p>
+          <div class="codebox">
+            <span class="comment"
+              >-- Menampilkan seluruh kolom dan baris dari tabel Buku</span
+            >
+            <span class="token">SELECT</span> *
+            <span class="token">FROM</span> Buku;
+
+            <span class="comment"
+              >-- Menampilkan HANYA kolom judul dan pengarang</span
+            >
+            <span class="token">SELECT</span> judul_buku, pengarang
+            <span class="token">FROM</span> Buku;
+          </div>
+        </article>
+
+        <div class="section-head" style="margin-top: 32px">
+          <div>
+            <div class="eyebrow">Konsep inti</div>
+            <h2>Menyaring & Mengurutkan</h2>
+          </div>
+          <p>
+            Database besar butuh filter agar data yang dipanggil relevan dengan
+            kebutuhan.
+          </p>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <h3>
+              <code class="inline">WHERE</code> &
+              <code class="inline">LIKE</code>
+            </h3>
+            <p>
+              Digunakan untuk memberi kondisi/syarat.
+              <code>LIKE</code> digunakan mencari pola teks (dilengkapi simbol
+              <code>%</code>).
+            </p>
+            <div class="codebox">
+              <span class="comment">-- Data berdasarkan kode spesifik</span>
+              <span class="token">SELECT</span> *
+              <span class="token">FROM</span> Buku
+              <span class="token">WHERE</span> nomor_buku =
+              <span class="str">'B-001'</span>;
+
+              <span class="comment"
+                >-- Data pengarang yang mengandung nama 'Andrea'</span
+              >
+              <span class="token">SELECT</span> *
+              <span class="token">FROM</span> Buku
+              <span class="token">WHERE</span> pengarang
+              <span class="token">LIKE</span>
+              <span class="str">'%Andrea%'</span>;
+            </div>
+          </article>
+          <article class="card">
+            <h3>
+              <code class="inline">ORDER BY</code> &
+              <code class="inline">LIMIT</code>
+            </h3>
+            <p>
+              <strong>ASC</strong> mengurutkan dari A-Z,
+              <strong>DESC</strong> dari Z-A. <strong>LIMIT</strong> membatasi
+              jumlah tampilannya.
+            </p>
+            <div class="codebox">
+              <span class="comment">-- Mengurutkan judul menurun (Z ke A)</span>
+              <span class="token">SELECT</span> *
+              <span class="token">FROM</span> Buku
+              <span class="token">ORDER BY</span> judul_buku
+              <span class="token">DESC</span>;
+
+              <span class="comment">-- Menampilkan 10 data teratas saja</span>
+              <span class="token">SELECT</span> *
+              <span class="token">FROM</span> Buku
+              <span class="token">LIMIT</span> 10;
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="praktikum">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">02 • Praktikum</div>
+            <h2>Praktik dengan DB Browser</h2>
+          </div>
+          <p>
+            Buka file <code>latihan.sqlite</code> menggunakan aplikasi
+            <strong>DB Browser for SQLite</strong>, lalu ketik dan jalankan
+            query berikut di tab <strong>Execute SQL</strong>.
+          </p>
+        </div>
+
+        <article class="lab">
+          <div class="lab-top">
+            <div class="step">1</div>
+            <div>
+              <h3>Tampilkan Semua Data & Kode Buku</h3>
+              <p>
+                Ambil seluruh isi tabel <code>Buku</code> dan bereksperimen
+                dengan pencarian spesifik.
+              </p>
+            </div>
+          </div>
+          <div class="codebox">
+            <span class="comment"
+              >-- 1. Menampilkan seluruh data tabel Buku</span
+            >
+            <span class="token">SELECT</span> *
+            <span class="token">FROM</span> Buku;
+
+            <span class="comment"
+              >-- 2. Menampilkan data berdasarkan kode buku</span
+            >
+            <span class="token">SELECT</span> *
+            <span class="token">FROM</span> Buku
+            <span class="token">WHERE</span> nomor_buku =
+            <span class="str">'B-015'</span>;
+          </div>
+          <details class="hint">
+            <summary>Jangan Lupa!</summary>
+            Dalam SQL murni, pastikan selalu mengakhiri statement query dengan
+            tanda titik koma (<code>;</code>) lalu tekan tombol
+            <strong>Play</strong> (▶) di DB Browser.
+          </details>
+        </article>
+
+        <article class="lab">
+          <div class="lab-top">
+            <div class="step">2</div>
+            <div>
+              <h3>Pencarian Pola dengan LIKE</h3>
+              <p>
+                Simbol <code>%</code> mewakili teks apapun.
+                <code>'%toer'</code> mencari kata yang berakhiran 'toer'.
+              </p>
+            </div>
+          </div>
+          <div class="codebox">
+            <span class="comment"
+              >-- Mencari pengarang yang namanya mengandung kata
+              'Pramoedya'</span
+            >
+            <span class="token">SELECT</span> *
+            <span class="token">FROM</span> Buku
+            <span class="token">WHERE</span> pengarang
+            <span class="token">LIKE</span>
+            <span class="str">'%Pramoedya%'</span>;
+          </div>
+        </article>
+
+        <article class="lab">
+          <div class="lab-top">
+            <div class="step">3</div>
+            <div>
+              <h3>Kombinasi Pengurutan & Pembatasan</h3>
+              <p>
+                Kamu bisa menggabungkan klausa <code>ORDER BY</code> dan
+                <code>LIMIT</code> sekaligus dalam satu baris query.
+              </p>
+            </div>
+          </div>
+          <div class="codebox">
+            <span class="comment"
+              >-- Mengurutkan berdasarkan ID dari yang terbesar (DESC)</span
+            >
+            <span class="comment"
+              >-- dan hanya menampilkan 10 data teratas.</span
+            >
+            <span class="token">SELECT</span> *
+            <span class="token">FROM</span> Buku
+            <span class="token">ORDER BY</span> id
+            <span class="token">DESC LIMIT</span> 10;
+          </div>
+        </article>
+      </section>
+
+      <section id="tugas">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">03 • Tugas mandiri</div>
+            <h2>Analisis Data Perpustakaan</h2>
+          </div>
+          <p>Tuliskan sintaks DQL (Data Query Language) yang diminta.</p>
+        </div>
+        <article class="card task">
+          <div class="task-no">A</div>
+          <h3>Eksplorasi Lanjutan</h3>
+          <p>
+            Kerjakan skenario berikut menggunakan aplikasi DBMS
+            <strong>DB Browser for SQLite</strong>.
+          </p>
+          <ul class="checklist">
+            <li>
+              <label
+                ><input type="checkbox" /> Tuliskan sintaks untuk menampilkan
+                <strong>seluruh data</strong> pada tabel
+                <code>Buku</code>.</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" /> Tuliskan sintaks untuk menampilkan
+                buku dengan <code>nomor_buku</code> =
+                <strong>'B-012'</strong>.</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" /> Tuliskan sintaks untuk mencari
+                pengarang yang huruf depannya dimulai dari huruf
+                <strong>'A'</strong> (Gunakan klausa LIKE
+                <code>'A%'</code>).</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" /> Tuliskan sintaks untuk membatasi
+                tampilan hanya <strong>10 data buku</strong> (LIMIT).</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" /> Tuliskan sintaks untuk mengurutkan
+                buku berdasarkan <code>judul_buku</code> secara
+                <strong>ASC</strong>.</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" /> Tuliskan sintaks untuk mengurutkan
+                buku berdasarkan <code>judul_buku</code> secara
+                <strong>DESC</strong>.</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" />
+                <strong>Tantangan:</strong> Gabungkan! Tampilkan 5 buku, urutkan
+                judulnya dari Z ke A (DESC), dari pengarang yang namanya
+                mengandung huruf 'o'.</label
+              >
+            </li>
+          </ul>
+        </article>
+      </section>
+
+      <section id="pengumpulan">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Pengumpulan hasil belajar</div>
+            <h2>Format Tugas Laporan</h2>
+          </div>
+          <p>
+            Susun screenshot sintaks dan hasilnya (di DB Browser) menjadi satu
+            PDF.
+          </p>
+        </div>
+        <article class="card">
+          <h3>Isi laporan</h3>
+          <ol>
+            <li>
+              <strong>Identitas:</strong> nama lengkap, asal sekolah, kelas,
+              periode magang.
+            </li>
+            <li>
+              <strong>Praktikum 1–3:</strong> Screenshot query dan screenshot
+              tabel hasilnya dari aplikasi
+              <strong>DB Browser for SQLite</strong>.
+            </li>
+            <li>
+              <strong>Tugas A:</strong> Screenshot seluruh 7 instruksi dari
+              Tugas Mandiri, beserta hasil eksekusi query-nya.
+            </li>
+            <li>
+              <strong>Kesimpulan Singkat:</strong> Perbedaan ASC dan DESC
+              menurut pemahamanmu sendiri.
+            </li>
+          </ol>
+          <p style="margin-top: 16px">
+            <strong>Nama file:</strong>
+            <code class="inline">NamaLengkap_SQL02_SELECT.pdf</code>
+          </p>
+        </article>
+      </section>
+
+      <footer class="footer">
+        Modul SQL Dasar • Menampilkan Data (SELECT) • Peserta Magang/PKL SMK RPL
+      </footer>
+    </main>
+
+    <script>
+      // Anti-copas script tetap dipertahankan
+      (function () {
+        var pesanJahil = [
+          "Menangis kau dek dek, jangan COPAS 😜",
+          "Ih nakal, ga suka 😝",
+          "Yee mau nyontek ya, gabisa 😏",
+          "Ketik sendiri dong, mager amat 🙄",
+          "Eits ketahuan mau curang 🤪",
+        ];
+        function acak() {
+          return pesanJahil[Math.floor(Math.random() * pesanJahil.length)];
+        }
+        var t = document.createElement("div");
+        t.style.cssText =
+          "position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#17202b;color:#fff;padding:12px 18px;border-radius:10px;font:600 14px Arial,sans-serif;opacity:0;pointer-events:none;transition:.25s;z-index:9999;box-shadow:0 6px 18px rgba(0,0,0,.22)";
+        document.body.appendChild(t);
+        var timer;
+        function toast() {
+          t.textContent = acak();
+          t.style.opacity = "1";
+          t.style.transform = "translateX(-50%) translateY(0)";
+          clearTimeout(timer);
+          timer = setTimeout(function () {
+            t.style.opacity = "0";
+            t.style.transform = "translateX(-50%) translateY(20px)";
+          }, 1800);
+        }
+
+        document.querySelectorAll(".codebox").forEach(function (box) {
+          box.style.userSelect = "none";
+          box.style.webkitUserSelect = "none";
+          ["copy", "cut", "contextmenu", "dragstart"].forEach(function (ev) {
+            box.addEventListener(ev, function (e) {
+              e.preventDefault();
+              toast();
+            });
+          });
+        });
+        document.addEventListener("contextmenu", function (e) {
+          e.preventDefault();
+          toast();
+        });
+        document.addEventListener("keydown", function (e) {
+          var k = (e.key || "").toLowerCase();
+          if (
+            e.key === "F12" ||
+            (e.ctrlKey && e.shiftKey && ["i", "j", "c"].indexOf(k) > -1) ||
+            (e.ctrlKey && ["u", "s", "p"].indexOf(k) > -1)
+          ) {
+            e.preventDefault();
+            toast();
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

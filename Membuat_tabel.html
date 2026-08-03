@@ -1,0 +1,1086 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pengenalan SQL — Database & Tabel</title>
+    <style>
+      :root {
+        --bg: #f7f8fa;
+        --card: #fff;
+        --text: #202124;
+        --muted: #68707c;
+        --line: #e3e6ea;
+        --blue: #2783de;
+        --blue-soft: #eaf4fd;
+        --green: #2f8f62;
+        --green-soft: #e8f4ed;
+        --orange: #bd6f2d;
+        --orange-soft: #fff1e5;
+        --code: #17202b;
+        --radius: 12px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font:
+          16px/1.6 Arial,
+          Helvetica,
+          sans-serif;
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      .top {
+        background: var(--card);
+        border-bottom: 1px solid var(--line);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .nav {
+        max-width: 1040px;
+        margin: auto;
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .brand {
+        font-weight: 800;
+      }
+
+      .brand span {
+        color: var(--blue);
+      }
+
+      .nav a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 14px;
+        margin-left: 18px;
+      }
+
+      .nav a:hover {
+        color: var(--blue);
+      }
+
+      main {
+        max-width: 1040px;
+        margin: auto;
+        padding: 48px 24px 80px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.25fr 0.75fr;
+        gap: 32px;
+        align-items: center;
+        margin-bottom: 48px;
+      }
+
+      .eyebrow {
+        color: var(--blue);
+        font-weight: 700;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .hero h1 {
+        font-size: clamp(34px, 5vw, 56px);
+        line-height: 1.08;
+        margin: 8px 0 16px;
+        letter-spacing: -0.03em;
+      }
+
+      .lead {
+        color: var(--muted);
+        font-size: 18px;
+        max-width: 650px;
+      }
+
+      .objective {
+        background: var(--blue-soft);
+        border: 1px solid #cbe4f8;
+        border-radius: var(--radius);
+        padding: 24px;
+      }
+
+      .objective h2 {
+        font-size: 18px;
+        margin: 0 0 10px;
+      }
+
+      .objective ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      section {
+        scroll-margin-top: 82px;
+        margin-top: 52px;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .section-head h2 {
+        font-size: 28px;
+        line-height: 1.2;
+        margin: 0;
+      }
+
+      .section-head p {
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+      }
+
+      .card h3 {
+        margin: 0 0 8px;
+        font-size: 19px;
+      }
+
+      .card p {
+        margin: 4px 0;
+        color: var(--muted);
+      }
+
+      code {
+        font-family: Consolas, Menlo, monospace;
+      }
+
+      .inline {
+        background: #eef0f2;
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: #b03b58;
+      }
+
+      .codebox {
+        background: var(--code);
+        color: #e6edf3;
+        border-radius: 8px;
+        padding: 16px;
+        overflow: auto;
+        margin-top: 14px;
+        font:
+          14px/1.55 Consolas,
+          Menlo,
+          monospace;
+        white-space: pre;
+      }
+
+      .token {
+        color: #ffc777;
+      }
+
+      .str {
+        color: #a8d89b;
+      }
+
+      .num {
+        color: #7cc7ff;
+      }
+
+      .comment {
+        color: #8b98a8;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 620px;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      th {
+        background: #fafafa;
+        font-size: 14px;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .lab {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 18px;
+      }
+
+      .lab-top {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+
+      .step {
+        width: 34px;
+        height: 34px;
+        flex: 0 0 auto;
+        border-radius: 8px;
+        background: var(--blue);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+      }
+
+      .lab h3 {
+        margin: 0 0 3px;
+      }
+
+      .lab p {
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .editor {
+        width: 100%;
+        min-height: 155px;
+        resize: vertical;
+        background: var(--code);
+        color: #edf4fa;
+        border: 1px solid #314050;
+        border-radius: 8px;
+        padding: 16px;
+        margin-top: 16px;
+        font:
+          14px/1.55 Consolas,
+          Menlo,
+          monospace;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 10px;
+      }
+
+      .btn {
+        border: 0;
+        border-radius: 8px;
+        min-height: 44px;
+        padding: 0 17px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .btn-primary {
+        background: var(--blue);
+        color: #fff;
+      }
+
+      .btn-primary:hover {
+        background: #176fbf;
+      }
+
+      .btn-secondary {
+        background: #eef0f2;
+        color: var(--text);
+      }
+
+      .output {
+        margin-top: 12px;
+        border-left: 4px solid var(--green);
+        background: var(--green-soft);
+        padding: 12px 14px;
+        border-radius: 0 8px 8px 0;
+        min-height: 48px;
+        white-space: pre-wrap;
+        font:
+          14px/1.5 Consolas,
+          Menlo,
+          monospace;
+      }
+
+      .hint {
+        margin-top: 14px;
+        background: var(--orange-soft);
+        border: 1px solid #f3d4b8;
+        border-radius: 8px;
+        padding: 12px 14px;
+        color: #78451d;
+      }
+
+      .hint summary {
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .task {
+        position: relative;
+        padding-left: 74px;
+      }
+
+      .task-no {
+        position: absolute;
+        left: 22px;
+        top: 22px;
+        color: var(--blue);
+        font-size: 28px;
+        font-weight: 900;
+      }
+
+      .checklist {
+        list-style: none;
+        padding: 0;
+        margin: 14px 0 0;
+      }
+
+      .checklist li {
+        margin: 8px 0;
+      }
+
+      .checklist input {
+        width: 18px;
+        height: 18px;
+        vertical-align: -3px;
+        margin-right: 8px;
+      }
+
+      .rubric {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .rubric div {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+      }
+
+      .rubric strong {
+        display: block;
+        color: var(--blue);
+        font-size: 20px;
+      }
+
+      .footer {
+        margin-top: 56px;
+        padding-top: 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .badge {
+        display: inline-block;
+        background: var(--blue-soft);
+        color: #176fbf;
+        border-radius: 999px;
+        padding: 3px 9px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      :focus-visible {
+        outline: 3px solid #8dc5f2;
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 760px) {
+        .nav .links {
+          display: none;
+        }
+
+        main {
+          padding: 30px 18px 60px;
+        }
+
+        .hero,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero {
+          gap: 18px;
+        }
+
+        .rubric {
+          grid-template-columns: 1fr;
+        }
+
+        .section-head {
+          display: block;
+        }
+
+        .section-head p {
+          margin-top: 6px;
+        }
+
+        .task {
+          padding-left: 62px;
+        }
+
+        .card,
+        .lab {
+          padding: 20px;
+        }
+
+        .task-no {
+          left: 18px;
+          top: 17px;
+        }
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #191919;
+          --card: #202020;
+          --text: #fff;
+          --muted: rgba(255, 255, 255, 0.66);
+          --line: rgba(255, 255, 255, 0.18);
+          --blue: #5e9fe8;
+          --blue-soft: #1d3045;
+          --green: #72bc8f;
+          --green-soft: #1c3025;
+          --orange: #de9255;
+          --orange-soft: #3b2a1d;
+          --code: #11161d;
+        }
+
+        .inline {
+          background: #333;
+          color: #ff8fac;
+        }
+
+        th {
+          background: #282828;
+        }
+
+        .btn-secondary {
+          background: #383836;
+          color: #fff;
+        }
+
+        .hint {
+          border-color: #65472f;
+          color: #ffd9b8;
+        }
+
+        .objective {
+          border-color: #355875;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="top">
+      <nav class="nav" aria-label="Navigasi materi">
+        <div class="brand"><span>SQL</span> Dasar</div>
+        <div class="links">
+          <a href="#materi">Materi</a><a href="#praktikum">Praktikum</a
+          ><a href="#tugas">Tugas</a><a href="#pengumpulan">Pengumpulan</a>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <div class="hero">
+        <div>
+          <div class="eyebrow">Modul SQL • Peserta Magang/PKL SMK RPL</div>
+          <h1>Pengenalan SQL,<br />Database &amp; Tabel</h1>
+          <p class="lead">
+            Mulai dari membuat ruang penyimpanan (Database), menyusun
+            strukturnya (Tabel), hingga menyimpan rekaman data di dalamnya.
+          </p>
+        </div>
+        <aside class="objective">
+          <h2>Tujuan pembelajaran</h2>
+          <ul>
+            <li>Memahami konsep dasar Relational Database.</li>
+            <li>Menggunakan perintah <code>CREATE DATABASE</code>.</li>
+            <li>
+              Membuat kerangka penyimpanan dengan
+              <code>CREATE TABLE</code> beserta tipe datanya.
+            </li>
+            <li>Memasukkan data menggunakan <code>INSERT INTO</code>.</li>
+          </ul>
+        </aside>
+      </div>
+
+      <section id="materi">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">01 • Penjelasan singkat</div>
+            <h2>Apa itu Database & Tabel?</h2>
+          </div>
+          <p>Database adalah lemari arsip, Tabel adalah laci penyimpanannya.</p>
+        </div>
+        <article class="card">
+          <h3>Struktur Penyimpanan Data</h3>
+          <p>
+            Dalam SQL (Structured Query Language), data disimpan dalam
+            <strong>Database</strong>. Di dalam database, terdapat
+            <strong>Tabel</strong> yang terdiri dari baris (record) dan kolom
+            (field). Sebelum kita bisa memasukkan data, kita harus menyiapkan
+            wadah (database) dan strukturnya (tabel) terlebih dahulu.
+          </p>
+          <div class="codebox">
+            <span class="comment">-- Membuat database baru</span>
+            <span class="token">CREATE DATABASE</span> nama_database;
+
+            <span class="comment"
+              >-- Menentukan database yang akan digunakan</span
+            >
+            <span class="token">USE</span> nama_database;
+          </div>
+          <p style="margin-top: 12px">
+            Pada modul ini, kode dapat dicoba langsung melalui tombol
+            <strong>Jalankan</strong> (disimulasikan). Dalam dunia nyata, Anda
+            akan menjalankan perintah ini di aplikasi seperti XAMPP
+            (phpMyAdmin), DBeaver, atau MySQL Command Line.
+          </p>
+        </article>
+        <div class="section-head" style="margin-top: 32px">
+          <div>
+            <div class="eyebrow">Konsep inti</div>
+            <h2>Tipe Data SQL</h2>
+          </div>
+          <p>
+            Setiap kolom dalam tabel wajib memiliki tipe data untuk membatasi
+            nilai yang masuk.
+          </p>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <h3><code class="inline">CREATE TABLE</code></h3>
+            <p>Membuat struktur kolom beserta tipe datanya.</p>
+            <div class="codebox">
+              <span class="token">CREATE TABLE</span> Siswa ( id
+              <span class="num">INT</span> PRIMARY KEY, nama
+              <span class="num">VARCHAR</span>(50) );
+            </div>
+          </article>
+          <article class="card">
+            <h3><code class="inline">INSERT INTO</code></h3>
+            <p>Memasukkan data (record) ke dalam tabel.</p>
+            <div class="codebox">
+              <span class="token">INSERT INTO</span> Siswa (id, nama)
+              <span class="token">VALUES</span> (1,
+              <span class="str">'Budi Santoso'</span>);
+            </div>
+          </article>
+        </div>
+        <div class="table-wrap" style="margin-top: 18px">
+          <table>
+            <thead>
+              <tr>
+                <th>Tipe Data</th>
+                <th>Contoh Nilai</th>
+                <th>Kegunaan</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>INT</strong></td>
+                <td><code>1</code>, <code>250</code>, <code>9999</code></td>
+                <td>Angka bulat. Cocok untuk ID, jumlah, harga bulat.</td>
+              </tr>
+              <tr>
+                <td><strong>VARCHAR(n)</strong></td>
+                <td><code>'Restu'</code>, <code>'Jl. Mawar'</code></td>
+                <td>Teks pendek, panjang maksimal <em>n</em> karakter.</td>
+              </tr>
+              <tr>
+                <td><strong>TEXT</strong></td>
+                <td><code>'Artikel panjang...'</code></td>
+                <td>Teks sangat panjang seperti deskripsi/artikel.</td>
+              </tr>
+              <tr>
+                <td><strong>DATE</strong></td>
+                <td><code>'2024-05-12'</code></td>
+                <td>Menyimpan tanggal (Format: YYYY-MM-DD).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="praktikum">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">02 • Praktikum</div>
+            <h2>Coba sintaks SQL</h2>
+          </div>
+          <p>
+            Simulasi eksekusi kode SQL. Edit dan tekan
+            <strong>Jalankan</strong>.
+          </p>
+        </div>
+        <article class="lab">
+          <div class="lab-top">
+            <div class="step">1</div>
+            <div>
+              <h3>Membuat Database</h3>
+              <p>Perintah paling awal sebelum bisa membuat tabel.</p>
+            </div>
+          </div>
+          <textarea class="editor" id="code1" spellcheck="false">
+-- Hapus jika sudah ada (opsional)
+DROP DATABASE IF EXISTS Sekolah;
+
+-- Buat database
+CREATE DATABASE Sekolah;
+
+-- Gunakan database tersebut
+USE Sekolah;</textarea
+          >
+          <div class="actions">
+            <button class="btn btn-primary" onclick="runCode('code1', 'out1')">
+              ▶ Jalankan</button
+            ><button class="btn btn-secondary" onclick="resetCode('code1')">
+              Reset
+            </button>
+          </div>
+          <div class="output" id="out1" aria-live="polite">
+            Output akan muncul di sini.
+          </div>
+          <details class="hint">
+            <summary>Eksperimen</summary>
+            Coba ubah nama database menjadi <code>TokoOnline</code> dan jalankan
+            kembali.
+          </details>
+        </article>
+
+        <article class="lab">
+          <div class="lab-top">
+            <div class="step">2</div>
+            <div>
+              <h3>Membuat Tabel</h3>
+              <p>Tentukan nama tabel, kolom, dan tipe datanya.</p>
+            </div>
+          </div>
+          <textarea class="editor" id="code2" spellcheck="false">
+CREATE TABLE Guru (
+  nip INT PRIMARY KEY,
+  nama_guru VARCHAR(100),
+  mata_pelajaran VARCHAR(50)
+);</textarea
+          >
+          <div class="actions">
+            <button class="btn btn-primary" onclick="runCode('code2', 'out2')">
+              ▶ Jalankan</button
+            ><button class="btn btn-secondary" onclick="resetCode('code2')">
+              Reset
+            </button>
+          </div>
+          <div class="output" id="out2" aria-live="polite">
+            Output akan muncul di sini.
+          </div>
+          <details class="hint">
+            <summary>Eksperimen</summary>
+            Tambahkan satu kolom lagi: <code>alamat TEXT</code> sebelum tanda
+            kurung tutup.
+          </details>
+        </article>
+
+        <article class="lab">
+          <div class="lab-top">
+            <div class="step">3</div>
+            <div>
+              <h3>Memasukkan Data (Insert)</h3>
+              <p>
+                Ingat, nilai bertipe teks/VARCHAR harus diapit tanda kutip
+                tunggal (').
+              </p>
+            </div>
+          </div>
+          <textarea class="editor" id="code3" spellcheck="false">
+INSERT INTO Guru (nip, nama_guru, mata_pelajaran) 
+VALUES 
+(1001, 'Bpk. Ahmad', 'Pemrograman Web'),
+(1002, 'Ibu Siska', 'Basis Data');</textarea
+          >
+          <div class="actions">
+            <button class="btn btn-primary" onclick="runCode('code3', 'out3')">
+              ▶ Jalankan</button
+            ><button class="btn btn-secondary" onclick="resetCode('code3')">
+              Reset
+            </button>
+          </div>
+          <div class="output" id="out3" aria-live="polite">
+            Output akan muncul di sini.
+          </div>
+          <details class="hint">
+            <summary>Pertanyaan</summary>
+            Mengapa NIP tidak memakai tanda kutip sedangkan nama guru memakai
+            tanda kutip tunggal?
+          </details>
+        </article>
+      </section>
+
+      <section id="tugas">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">03 • Tugas mandiri</div>
+            <h2>Implementasi Database</h2>
+          </div>
+          <p>Terapkan konsep DDL dan DML dari materi sebelumnya.</p>
+        </div>
+        <article class="card task">
+          <div class="task-no">A</div>
+          <h3>Membangun Basis Data Perpustakaan</h3>
+          <p>
+            Buat query SQL lengkap (dari membuat database, tabel, hingga
+            memasukkan data) berdasarkan spesifikasi berikut ini di area teks
+            atau aplikasi DBMS Anda.
+          </p>
+          <ul class="checklist">
+            <li>
+              <label
+                ><input type="checkbox" /> Buat database bernama
+                <code>Perpustakaan</code>.</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" /> Gunakan database tersebut (<code
+                  >USE Perpustakaan;</code
+                >).</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" /> Buat tabel bernama
+                <code>Buku</code>.</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" /> Tambahkan kolom
+                <code>id</code> bertipe <code>INT</code> sebagai
+                <code>PRIMARY KEY</code> dan
+                <code>AUTO_INCREMENT</code> (opsional).</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" /> Tambahkan kolom
+                <code>nomor_buku</code> bertipe <code>VARCHAR(20)</code>.</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" /> Tambahkan kolom
+                <code>judul_buku</code> bertipe
+                <code>VARCHAR(150)</code>.</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" /> Tambahkan kolom
+                <code>pengarang</code> bertipe <code>VARCHAR(100)</code>.</label
+              >
+            </li>
+            <li>
+              <label
+                ><input type="checkbox" /> Lakukan
+                <code>INSERT INTO</code> tabel Buku sebanyak
+                <strong>20 data buku</strong> yang berbeda (buku fiksi maupun
+                non-fiksi).</label
+              >
+            </li>
+          </ul>
+          <div class="codebox">
+            <span class="comment">-- Contoh awalan pengerjaan:</span>
+            <span class="token">CREATE DATABASE</span> Perpustakaan;
+            <span class="token">USE</span> Perpustakaan;
+
+            <span class="token">CREATE TABLE</span> Buku ( id
+            <span class="num">INT</span> PRIMARY KEY, nomor_buku
+            <span class="num">VARCHAR</span>(20), judul_buku
+            <span class="num">VARCHAR</span>(150), pengarang
+            <span class="num">VARCHAR</span>(100) );
+
+            <span class="token">INSERT INTO</span> Buku (id, nomor_buku,
+            judul_buku, pengarang) <span class="token">VALUES</span> (1,
+            <span class="str">'B-001'</span>,
+            <span class="str">'Laskar Pelangi'</span>,
+            <span class="str">'Andrea Hirata'</span>), (2,
+            <span class="str">'B-002'</span>,
+            <span class="str">'Bumi Manusia'</span>,
+            <span class="str">'Pramoedya Ananta Toer'</span>),
+            <span class="comment">-- Lanjutkan sampai id 20 ...</span>
+            (20, <span class="str">'B-020'</span>,
+            <span class="str">'Filosofi Teras'</span>,
+            <span class="str">'Henry Manampiring'</span>);
+          </div>
+        </article>
+      </section>
+
+      <section id="pengumpulan">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Pengumpulan hasil belajar</div>
+            <h2>Buat satu laporan PDF</h2>
+          </div>
+          <p>Gabungkan seluruh bukti praktikum dan tugas.</p>
+        </div>
+        <article class="card">
+          <h3>Isi laporan</h3>
+          <ol>
+            <li>
+              <strong>Identitas:</strong> nama lengkap, asal sekolah,
+              kelas/jurusan, dan periode magang/PKL.
+            </li>
+            <li>
+              <strong>Praktikum 1–3:</strong> sertakan screenshot kode query dan
+              hasilnya (jika memakai XAMPP/MySQL).
+            </li>
+            <li>
+              <strong>Tugas A:</strong> sertakan screenshot seluruh kode (Create
+              Database, Create Table, dan 20 data Insert) serta hasil query
+              <code>SELECT * FROM Buku;</code>.
+            </li>
+            <li>
+              <strong>Kesimpulan:</strong> tulis 3–5 kalimat tentang hal yang
+              dipahami dari database relasional, kendala sintaks yang ditemukan,
+              dan cara mengatasinya.
+            </li>
+          </ol>
+          <div class="hint">
+            <strong>Format keterangan setiap bagian:</strong><br />Tujuan query
+            • nama tabel/kolom yang digunakan • tipe datanya • hasil eksekusi.
+          </div>
+          <p style="margin-top: 16px">
+            <strong>Nama file:</strong>
+            <code class="inline">NamaLengkap_SQL01_DatabaseTabel.pdf</code>
+          </p>
+        </article>
+      </section>
+      <footer class="footer">
+        Modul SQL Dasar • Database, Tabel, dan Data • Peserta Magang/PKL SMK RPL
+      </footer>
+    </main>
+    <script>
+      const originals = {};
+      document
+        .querySelectorAll(".editor")
+        .forEach((el) => (originals[el.id] = el.value));
+
+      // Fungsi khusus untuk simulasi SQL di frontend HTML statis
+      function runCode(codeId, outId) {
+        const code = document.getElementById(codeId).value.toUpperCase();
+        const output = document.getElementById(outId);
+        let result = "";
+
+        if (code.includes("CREATE DATABASE")) {
+          result += "✅ Eksekusi berhasil: Database diproses.\n";
+        }
+        if (code.includes("CREATE TABLE")) {
+          result += "✅ Eksekusi berhasil: Tabel diproses.\n";
+        }
+        if (code.includes("INSERT INTO")) {
+          result += "✅ Eksekusi berhasil: Data (record) ditambahkan.\n";
+        }
+        if (result === "") {
+          result =
+            "✅ Query SQL selesai dibaca (Tidak ada CREATE/INSERT terdeteksi, pastikan sintaks benar).";
+        }
+
+        output.style.borderLeftColor = "var(--green)";
+        output.style.background = "var(--green-soft)";
+        output.textContent = result;
+      }
+
+      function resetCode(codeId) {
+        document.getElementById(codeId).value = originals[codeId];
+        const out = document.getElementById(codeId.replace("code", "out"));
+        out.textContent = "Output akan muncul di sini.";
+        out.style.borderLeftColor = "var(--green)";
+        out.style.background = "var(--green-soft)";
+      }
+
+      (function () {
+        var pesanJahil = [
+          "Menangis kau dek dek, jangan COPAS 😜",
+          "Ih nakal, ga suka 😝",
+          "Yee mau nyontek ya, gabisa 😏",
+          "Ketik sendiri dong, mager amat 🙄",
+          "Eits ketahuan mau curang 🤪",
+        ];
+        function acak() {
+          return pesanJahil[Math.floor(Math.random() * pesanJahil.length)];
+        }
+
+        var t = document.createElement("div");
+        t.style.cssText =
+          "position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#17202b;color:#fff;padding:12px 18px;border-radius:10px;font:600 14px Arial,sans-serif;opacity:0;pointer-events:none;transition:.25s;z-index:9999;box-shadow:0 6px 18px rgba(0,0,0,.22)";
+        document.body.appendChild(t);
+        var timer;
+        function toast() {
+          t.textContent = acak();
+          t.style.opacity = "1";
+          t.style.transform = "translateX(-50%) translateY(0)";
+          clearTimeout(timer);
+          timer = setTimeout(function () {
+            t.style.opacity = "0";
+            t.style.transform = "translateX(-50%) translateY(20px)";
+          }, 1800);
+        }
+
+        document.querySelectorAll(".codebox").forEach(function (box) {
+          box.style.userSelect = "none";
+          box.style.webkitUserSelect = "none";
+          ["copy", "cut", "contextmenu", "dragstart"].forEach(function (ev) {
+            box.addEventListener(ev, function (e) {
+              e.preventDefault();
+              toast();
+            });
+          });
+        });
+        document.querySelectorAll(".editor").forEach(function (ed) {
+          ["paste", "copy", "cut", "drop", "contextmenu"].forEach(
+            function (ev) {
+              ed.addEventListener(ev, function (e) {
+                e.preventDefault();
+                toast();
+              });
+            },
+          );
+        });
+        document.addEventListener("contextmenu", function (e) {
+          e.preventDefault();
+          toast();
+        });
+        document.addEventListener("keydown", function (e) {
+          var k = (e.key || "").toLowerCase();
+          if (
+            e.key === "F12" ||
+            (e.ctrlKey && e.shiftKey && ["i", "j", "c"].indexOf(k) > -1) ||
+            (e.ctrlKey && ["u", "s", "p"].indexOf(k) > -1)
+          ) {
+            e.preventDefault();
+            toast();
+          }
+        });
+      })();
+
+      // Fungsi khusus untuk simulasi SQL yang lebih ketat
+      function runCode(codeId, outId) {
+        const code = document.getElementById(codeId).value.trim();
+        const output = document.getElementById(outId);
+        let result = [];
+        let hasError = false;
+
+        // 1. Validasi CREATE DATABASE
+        if (/CREATE\s+DATABASE/i.test(code)) {
+          // Cek apakah formatnya: CREATE DATABASE nama_db;
+          if (/CREATE\s+DATABASE\s+[a-zA-Z0-9_]+\s*;/i.test(code)) {
+            result.push("✅ Sukses: Database berhasil disiapkan.");
+          } else {
+            result.push(
+              "❌ Error: Sintaks CREATE DATABASE salah. Pastikan penamaan tanpa spasi dan diakhiri titik koma (;).",
+            );
+            hasError = true;
+          }
+        }
+
+        // 2. Validasi CREATE TABLE
+        if (/CREATE\s+TABLE/i.test(code)) {
+          // Cek apakah ada kurung buka, isi kolom, kurung tutup, dan titik koma
+          if (/CREATE\s+TABLE\s+[a-zA-Z0-9_]+\s*\([\s\S]+\)\s*;/i.test(code)) {
+            result.push("✅ Sukses: Struktur tabel berhasil dibuat.");
+          } else {
+            result.push(
+              "❌ Error: Sintaks CREATE TABLE tidak valid. Periksa kelengkapan tanda kurung () dan titik koma (;).",
+            );
+            hasError = true;
+          }
+        }
+
+        // 3. Validasi INSERT INTO
+        if (/INSERT\s+INTO/i.test(code)) {
+          // Cek pola INSERT INTO nama_tabel VALUES (isi);
+          if (
+            /INSERT\s+INTO\s+[a-zA-Z0-9_]+\s*(\([\s\S]+\))?\s*VALUES\s*\([\s\S]+\)\s*;/i.test(
+              code,
+            )
+          ) {
+            result.push("✅ Sukses: Data (record) berhasil ditambahkan.");
+          } else {
+            result.push(
+              "❌ Error: Sintaks INSERT INTO salah. Periksa format VALUES dan penutup titik koma (;).",
+            );
+            hasError = true;
+          }
+        }
+
+        // 4. Jika query kosong atau tidak dikenali sama sekali
+        if (result.length === 0) {
+          result.push(
+            "⚠️ Peringatan: Query tidak dikenali atau penulisan belum lengkap.",
+          );
+          hasError = true;
+        }
+
+        // Mengubah warna output berdasarkan status error
+        if (hasError) {
+          output.style.borderLeftColor = "#e56458";
+          output.style.background = "rgba(229,100,88,.12)";
+        } else {
+          output.style.borderLeftColor = "var(--green)";
+          output.style.background = "var(--green-soft)";
+        }
+
+        output.textContent = result.join("\n\n");
+      }
+    </script>
+  </body>
+</html>
